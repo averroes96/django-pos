@@ -25,4 +25,4 @@ class SupplierSerializer(ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "balance", "created_at", "updated_at"]
+        read_only_fields = ["id", "balance_initial", "created_at", "updated_at"]

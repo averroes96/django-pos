@@ -14,7 +14,7 @@ class AgentSerializer(ModelSerializer):
     email = CharField(source="user.email", required=False)
     last_login = CharField(source="user.email", required=False)
     token = CharField(source="user.auth_token.key", required=False)
-    permissions = ListField(source="user.user_permissions.all", required=False)
+    permissions = ListField(source="user.user_permissions.values", required=False)
     
     @atomic
     def create(self, validated_data):
@@ -26,7 +26,7 @@ class AgentSerializer(ModelSerializer):
         user = User.objects.create(**validated_data.get("user"))
         
         # set user permissions
-        permissions_all = permissions_list.get("all")
+        permissions_all = permissions_list.get("values")
         
         if permissions_list:
             permissions = Permission.objects.filter(

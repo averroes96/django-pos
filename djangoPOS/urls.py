@@ -46,7 +46,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')), # TODO
     
     path('api/base/', include('base.urls')),
-    path('api/agents/', include('agents.urls')),
+    path('api/', include('agents.urls')),
     path('api/buys/', include('buys.urls'))
 ]
 
