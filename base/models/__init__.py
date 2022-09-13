@@ -22,8 +22,8 @@ class Partner(BaseModel):
     fax = models.CharField(max_length=16, null=True, blank=True)
     fiscal_id = models.CharField(max_length=16, null=True, blank=True)
     trade_registry = models.CharField(max_length=32, null=True, blank=True)
-    balance = models.PositiveIntegerField(default=0)
-    balance_initial = models.PositiveIntegerField(default=0)
+    balance = models.IntegerField(default=0)
+    balance_initial = models.IntegerField(default=0)
     
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"

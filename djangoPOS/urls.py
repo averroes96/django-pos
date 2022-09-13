@@ -25,7 +25,7 @@ from drf_yasg.views import get_schema_view
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="POS API",
+      title="Django POS API",
       default_version='v1',
       description="Test description",
       terms_of_service="https://www.google.com/policies/terms/",
@@ -47,7 +47,8 @@ urlpatterns = [
     
     path('api/base/', include('base.urls')),
     path('api/', include('agents.urls')),
-    path('api/buys/', include('buys.urls'))
+    path('api/buys/', include('buys.urls')),
+    path('api/sells/', include('sells.urls'))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
