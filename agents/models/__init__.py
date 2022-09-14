@@ -27,9 +27,5 @@ class Agent(BaseModel):
     
     user = models.OneToOneField(to=User, on_delete=models.CASCADE)
     
-    class Meta:
-        get_latest_by = ["created_at"]
-        ordering = ["-created_at"]
-    
     def __str__(self) -> str:
         return f"{self.user.username}"

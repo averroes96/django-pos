@@ -12,7 +12,8 @@ class BaseModel(models.Model):
     
     class Meta:
         abstract = True
-        get_latest_by = 'created_at'
+        get_latest_by = ['created_at']
+        ordering = ['-created_at']
 
 class Partner(BaseModel):
     first_name = models.CharField(max_length=64, null=True)
@@ -27,11 +28,9 @@ class Partner(BaseModel):
     
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
-    
+
     class Meta:
         abstract = True
-        get_latest_by = ["created_at"]
-        ordering = ["-created_at"]
 
 
 class Voucher(BaseModel):

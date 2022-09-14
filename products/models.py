@@ -7,20 +7,15 @@ from base.models import BaseModel
 class ArticleFamily(BaseModel):
     name = models.CharField(max_length=128)
     
-    class Meta:
-        get_latest_by = ["created_at"]
-        ordering = ["-created_at"]
-    
     def __str__(self) -> str:
         return self.name
+    
+    class Meta:
+        verbose_name_plural = "Article families"
 
 
 class ArticleBrand(BaseModel):
     name = models.CharField(max_length=128)
-    
-    class Meta:
-        get_latest_by = ["created_at"]
-        ordering = ["-created_at"]
     
     def __str__(self) -> str:
         return self.name
@@ -31,10 +26,6 @@ class Unit(BaseModel):
 
     def __str__(self) -> str:
         return self.name
-    
-    class Meta:
-        get_latest_by = ["created_at"]
-        ordering = ["-created_at"]
 
 
 class Article(BaseModel):
@@ -53,7 +44,3 @@ class Article(BaseModel):
     
     def __str__(self) -> str:
         return f"{self.reference}" 
-
-    class Meta:
-        get_latest_by = ["created_at"]
-        ordering = ["-created_at"]
