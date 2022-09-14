@@ -4,6 +4,7 @@ from base.models import BaseModel
 
 # Create your models here.
 
+
 class ArticleFamily(BaseModel):
     name = models.CharField(max_length=128)
     
