@@ -35,7 +35,7 @@ class Partner(BaseModel):
 
 
 class Voucher(BaseModel):
-    from products.models import Product
+    from products.models import Article
     
     def calculate_rest(self):
         return self.total - self.paid
@@ -46,7 +46,7 @@ class Voucher(BaseModel):
     rest = models.PositiveIntegerField(default=calculate_rest)
     with_debt = models.BooleanField(default=False)
     
-    products = models.ManyToManyField(to=Product)
+    articles = models.ManyToManyField(to=Article)
 
     class Meta:
         abstract = True

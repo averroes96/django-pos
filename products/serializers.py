@@ -1,12 +1,19 @@
 from rest_framework.serializers import ModelSerializer
 
-from products.models import Product, ProductFamily, Unit
+from products.models import Article, ArticleBrand, ArticleFamily, Unit
 
 
-class ProductFamilySerializer(ModelSerializer):
+class ArticleFamilySerializer(ModelSerializer):
     
     class Meta:
-        model = ProductFamily
+        model = ArticleFamily
+        fields = "__all__"
+
+
+class ArticleBrandSerializer(ModelSerializer):
+    
+    class Meta:
+        model = ArticleBrand
         fields = "__all__"
 
 
@@ -17,8 +24,8 @@ class UnitSerializer(ModelSerializer):
         fields = "__all__"
 
 
-class ProductSerializer(ModelSerializer):
+class ArticleSerializer(ModelSerializer):
 
     class Meta:
-        model = Product
+        model = Article
         fields = "__all__"

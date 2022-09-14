@@ -8,11 +8,15 @@ from agents.models import Agent
 
 
 
-class IsAgent(BasePermission):
+class IsAdminOrAgent(BasePermission):
     
     message = AGENT_ONLY_ALLOWED
     
     def has_permission(self, request: HttpRequest, view):
+        
+        if request.user.is_staff:
+            return True
+        
         try:
             Agent.objects.get(user=request.user)
             return True
