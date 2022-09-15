@@ -20,14 +20,17 @@ def post_buy_voucher_detail_save(sender, instance: BuyVoucherDetail, created, *a
         article.buy_price = instance.price
         article.quantity += instance.quantity
         article.save()
+    elif (instance.current_quantity != instance.quantity or instance.current_price != instance.price):
+        article.buy_price = instance.price
+        article.quantity -= instance.current_quantity
+        article.quantity += instance.quantity
+        article.save()
 
 
 @receiver(pre_save, sender=BuyVoucher)
 def pre_buy_voucher_save(sender, instance: BuyVoucher, *args, **kwargs):
-    
-    if instance._state.adding:
-        instance.rest = instance.calculate_rest()
-    
+    instance.rest = instance.calculate_rest()
+    instance.with_debt = instance.paid < instance.total
 
 
 @receiver(post_save, sender=BuyVoucher)
@@ -36,5 +39,9 @@ def post_buy_voucher_save(sender, instance: BuyVoucher, created, *args, **kwargs
     supplier = instance.supplier
     
     if created:
-        supplier.balance += instance.total
+        supplier.balance += instance.rest
+        supplier.save()
+    elif instance.current_rest != instance.rest:
+        supplier.balance -= instance.current_rest
+        supplier.balance += instance.rest
         supplier.save()

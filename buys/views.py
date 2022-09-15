@@ -1,7 +1,12 @@
 from rest_framework.viewsets import ModelViewSet
 
 from buys.models import Supplier, BuyVoucher
-from buys.serializers import SupplierSerializer, BuyVoucherListSerializer, BuyVoucherCreateSerializer
+from buys.serializers import (
+    SupplierSerializer, 
+    BuyVoucherListSerializer, 
+    BuyVoucherCreateSerializer,
+    BuyVoucherRetrieveSerializer
+)
 from buys.permissions import BuysPermission
 
 # Create your views here.
@@ -23,8 +28,10 @@ class BuyVoucherViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.action == "create":
             return BuyVoucherCreateSerializer
-        
-        return BuyVoucherListSerializer
+        elif self.action == "list":
+            return BuyVoucherListSerializer
+        else:
+            return BuyVoucherRetrieveSerializer
     
     def get_queryset(self):
         return BuyVoucher.objects.all()

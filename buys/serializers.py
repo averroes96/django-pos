@@ -28,11 +28,20 @@ class SupplierSerializer(ModelSerializer):
         read_only_fields = ["id", "balance_initial", "created_at", "updated_at"]
 
 
+class BuyVoucherDetailSerializer(ModelSerializer):
+    
+    id = CharField()
+    
+    class Meta:
+        model = BuyVoucherDetail
+        fields = ["id", "article", "quantity", "price"]
+
 class BuyVoucherDetailCreateSerializer(ModelSerializer):
     
     class Meta:
         model = BuyVoucherDetail
         fields = ["article", "quantity", "price"]
+
 
 class BuyVoucherListSerializer(ModelSerializer):
     
@@ -70,4 +79,24 @@ class BuyVoucherCreateSerializer(ModelSerializer):
     class Meta:
         model = BuyVoucher
         fields = ["number", "total", "paid", "rest", "with_debt", "supplier", "details"]
-        read_only_fields = ["id", "total", "created_at", "updated_at"]
+        read_only_fields = ["id", "total", "created_at", "rest", "updated_at"]
+
+
+class BuyVoucherRetrieveSerializer(ModelSerializer):
+    
+    details = BuyVoucherDetailSerializer(many=True)
+    
+    def update(self, instance, validated_data):
+        details = validated_data.pop("details")
+        
+        instance.total = sum([detail.get("price") * detail.get("quantity") for detail in details])
+        super().update(instance, validated_data)
+        
+        instance.update_details(details)
+        
+        return instance
+    
+    class Meta:
+        model = BuyVoucher
+        fields = ["id", "number", "total", "paid", "rest", "with_debt", "supplier", "details"]
+        read_only_fields = ["id", "total", "supplier", "rest", "created_at", "updated_at"]
