@@ -31,6 +31,8 @@ class Partner(BaseModel):
 
     class Meta:
         abstract = True
+        get_latest_by = ['created_at']
+        ordering = ['-created_at']
 
 
 class Voucher(BaseModel):

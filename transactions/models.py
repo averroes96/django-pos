@@ -15,16 +15,20 @@ class Transaction(BaseModel):
     value = models.IntegerField()
     agent = models.ForeignKey(to=Agent, null=True, on_delete=models.SET_NULL)
     
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.current_value = self.value
+    
     class Meta:
         abstract = True
 
 
 class ClientTransaction(Transaction):
-    client = models.ForeignKey(to=Client, null=True, on_delete=models.SET_NULL)
+    client = models.ForeignKey(to=Client, on_delete=models.DO_NOTHING)
 
 
 class SupplierTransaction(Transaction):
-    supplier = models.ForeignKey(to=Supplier, null=True, on_delete=models.SET_NULL)
+    supplier = models.ForeignKey(to=Supplier, on_delete=models.DO_NOTHING)
 
 
 class Expense(BaseModel):
@@ -40,5 +44,5 @@ class Expense(BaseModel):
     type = models.IntegerField(choices=EXPENSE_TYPES)
     note = models.TextField()
     
-    agent = models.ForeignKey(to=Agent, null=True, on_delete=models.SET_NULL)
+    agent = models.ForeignKey(to=Agent, on_delete=models.DO_NOTHING)
     

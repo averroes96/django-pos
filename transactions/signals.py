@@ -5,18 +5,29 @@ from transactions.models import ClientTransaction, SupplierTransaction
 
 
 @receiver(post_save, sender=ClientTransaction)
-def post_client_transaction_save(sender, instance: ClientTransaction, *args, **kwargs):
+def post_client_transaction_save(sender, instance: ClientTransaction, created, *args, **kwargs):
     
-    if instance._state.adding:
-        client = instance.client
+    client = instance.client
+    
+    if created:
+        client.balance += instance.value
+        client.save()
+    elif instance.current_value != instance.value:
+        client.balance -= instance.current_value
         client.balance += instance.value
         client.save()
 
 
 @receiver(post_save, sender=SupplierTransaction)
-def post_supplier_transaction_save(sender, instance: SupplierTransaction, *args, **kwargs):
+def post_supplier_transaction_save(sender, instance: SupplierTransaction, created, *args, **kwargs):
     
-    if instance._state.adding:
-        supplier = instance.supplier
+    supplier = instance.supplier
+    
+    if created:
+        supplier.balance -= instance.value
+        supplier.save()
+
+    if instance.current_value != instance.value:
+        supplier.balance += instance.current_value
         supplier.balance -= instance.value
         supplier.save()
