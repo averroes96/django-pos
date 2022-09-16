@@ -32,10 +32,10 @@ class Unit(BaseModel):
 class Article(BaseModel):
     reference = models.CharField(max_length=128)
     name = models.CharField(max_length=256, null=True, blank=True)
-    quantity = models.PositiveIntegerField(default=0)
-    quantity_minimum = models.PositiveIntegerField(default=0)
+    quantity = models.IntegerField(default=0)
+    quantity_minimum = models.IntegerField(default=0)
     stock_negative = models.BooleanField(default=False)
-    margin = models.PositiveIntegerField(default=0)
+    margin = models.DecimalField(max_digits=10, decimal_places=2)
     buy_price = models.PositiveIntegerField()
     sell_price = models.PositiveIntegerField()
     
@@ -44,4 +44,4 @@ class Article(BaseModel):
     unit = models.ForeignKey(to=Unit, null=True, blank=True, on_delete=models.SET_NULL)
     
     def __str__(self) -> str:
-        return f"{self.reference}" 
+        return f"{self.reference}"
