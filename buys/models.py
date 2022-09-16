@@ -10,11 +10,15 @@ class Supplier(Partner):
     pass
 
 class BuyVoucher(Voucher):
+    
     supplier = models.ForeignKey(to=Supplier, on_delete=models.DO_NOTHING)
     
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.current_rest = self.rest
+    
+    def __str__(self) -> str:
+        return self.number
     
     def create_details(self, details):
         """
