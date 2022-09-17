@@ -1,4 +1,9 @@
-from rest_framework.serializers import ModelSerializer, CharField
+from rest_framework.serializers import (
+    ModelSerializer, 
+    CharField, 
+    CurrentUserDefault, 
+    PrimaryKeyRelatedField
+)
 
 from buys.models import Supplier, BuyVoucher, BuyVoucherDetail
 
@@ -54,6 +59,7 @@ class BuyVoucherListSerializer(ModelSerializer):
 class BuyVoucherCreateSerializer(ModelSerializer):
     
     details = BuyVoucherDetailCreateSerializer(many=True)
+    agent = PrimaryKeyRelatedField(read_only=True, default=CurrentUserDefault())
     
     def create(self, validated_data):
         
@@ -63,6 +69,7 @@ class BuyVoucherCreateSerializer(ModelSerializer):
         with_debt = validated_data.get("with_debt", False)
         supplier = validated_data.get("supplier")
         number = validated_data.get("number")
+        agent = validated_data.get("agent")
         total = sum([detail.get("price") * detail.get("quantity") for detail in details])
         
         buy_voucher = BuyVoucher.objects.create(
@@ -70,7 +77,8 @@ class BuyVoucherCreateSerializer(ModelSerializer):
             paid=paid,
             total=total,
             with_debt=with_debt,
-            supplier=supplier
+            supplier=supplier,
+            agent=agent
         )
         buy_voucher.create_details(details)
         
@@ -78,13 +86,14 @@ class BuyVoucherCreateSerializer(ModelSerializer):
     
     class Meta:
         model = BuyVoucher
-        fields = ["number", "total", "paid", "rest", "with_debt", "supplier", "details"]
-        read_only_fields = ["id", "total", "created_at", "rest", "updated_at"]
+        fields = ["number", "total", "paid", "rest", "with_debt", "supplier", "agent" ,"details"]
+        read_only_fields = ["id", "total", "created_at", "rest", "updated_at", "agent"]
 
 
 class BuyVoucherRetrieveSerializer(ModelSerializer):
     
     details = BuyVoucherDetailSerializer(many=True)
+    agent = PrimaryKeyRelatedField(read_only=True, default=CurrentUserDefault())
     
     def update(self, instance, validated_data):
         details = validated_data.pop("details")
@@ -98,5 +107,5 @@ class BuyVoucherRetrieveSerializer(ModelSerializer):
     
     class Meta:
         model = BuyVoucher
-        fields = ["id", "number", "total", "paid", "rest", "with_debt", "supplier", "details"]
-        read_only_fields = ["id", "total", "supplier", "rest", "created_at", "updated_at"]
+        fields = ["id", "number", "total", "paid", "rest", "with_debt", "supplier", "agent", "details"]
+        read_only_fields = ["id", "total", "supplier", "agent", "rest", "created_at", "updated_at"]

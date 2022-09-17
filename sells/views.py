@@ -1,7 +1,12 @@
 from rest_framework.viewsets import ModelViewSet
 
-from sells.models import Client
-from sells.serializers import ClientSerializer
+from sells.models import Client, SellVoucher
+from sells.serializers import (
+    ClientSerializer, 
+    SellVoucherListSerializer, 
+    SellVoucherRetrieveSerializer,
+    SellVoucherCreateSerializer
+)
 from sells.permissions import SellsPermission
 
 # Create your views here.
@@ -13,3 +18,19 @@ class ClientsViewSet(ModelViewSet):
     
     def get_queryset(self):
         return Client.objects.all()
+
+
+class SellVoucherViewSet(ModelViewSet):
+    
+    permission_classes = [SellsPermission]
+    
+    def get_serializer_class(self):
+        if self.action == "create":
+            return SellVoucherCreateSerializer
+        elif self.action == "list":
+            return SellVoucherListSerializer
+        else:
+            return SellVoucherListSerializer
+    
+    def get_queryset(self):
+        return SellVoucher.objects.all()

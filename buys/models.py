@@ -40,7 +40,6 @@ class BuyVoucher(Voucher):
         detail_ids = []
         
         for detail in details:
-            print(detail)
             if detail.get("id"):
                 detail_ids.append(detail.get("id"))
                 
@@ -72,3 +71,6 @@ class BuyVoucherDetail(BaseModel):
     
     article = models.ForeignKey(to=Article, on_delete=models.DO_NOTHING)
     voucher = models.ForeignKey(to=BuyVoucher, related_name="details", on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.voucher} ({self.article})"

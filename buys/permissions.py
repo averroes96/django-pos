@@ -21,9 +21,8 @@ class BuysPermission(BasePermission):
         :return: A boolean value.
         """
         user = request.user
-        permission = Permission.objects.get(codename=Agent.Permission.BUYS_PERMISSION_CODENAME)
         
-        if user.has_perm(permission):
+        if user.has_perm(f"agents.{Agent.Permission.BUYS_PERMISSION_CODENAME}"):
             return True
         
         return False

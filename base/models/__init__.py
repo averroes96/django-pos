@@ -36,6 +36,7 @@ class Partner(BaseModel):
 
 
 class Voucher(BaseModel):
+    from agents.models import Agent
     
     def calculate_rest(self):
         return self.total - self.paid
@@ -48,6 +49,8 @@ class Voucher(BaseModel):
     paid = models.PositiveIntegerField(default=0)
     rest = models.PositiveIntegerField(default=0)
     with_debt = models.BooleanField(default=False)
+    
+    agent = models.ForeignKey(to=Agent, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         abstract = True

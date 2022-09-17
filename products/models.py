@@ -30,6 +30,7 @@ class Unit(BaseModel):
 
 
 class Article(BaseModel):
+    
     reference = models.CharField(max_length=128)
     name = models.CharField(max_length=256, null=True, blank=True)
     quantity = models.IntegerField(default=0)

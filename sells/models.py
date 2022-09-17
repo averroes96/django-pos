@@ -12,12 +12,63 @@ class Client(Partner):
 
 
 class SellVoucher(Voucher):
+    
     client = models.ForeignKey(to=Client, on_delete=models.DO_NOTHING)
+    
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.current_rest = self.rest
+    
+    def create_details(self, details):
+        """
+        It creates a list of BuyVoucherDetail objects from a list of dictionaries
+        
+        :param details: list of dictionaries
+        """
+        
+        for detail in details:
+            SellVoucherDetail.objects.create(
+                voucher=self,
+                quantity=detail.get("quantity"),
+                article=detail.get("article"),
+                price=detail.get("price")
+            )
+    
+    def update_details(self, details):
+        
+        detail_ids = []
+        
+        for detail in details:
+            if detail.get("id"):
+                detail_ids.append(detail.get("id"))
+                
+                detail_object = self.details.get(id=detail.get("id"))
+                detail_object.quantity = detail.get("quantity")
+                detail_object.price = detail.get("price")
+                detail_object.save()
+            else:
+                SellVoucherDetail.objects.create(
+                    voucher=self,
+                    article=detail.get("article"),
+                    quantity=detail.get("quantity"),
+                    price=detail.get("price")
+                )
+        
+        # delete removed details
+        self.details.exclude(id__in=detail_ids).delete()
 
 
 class SellVoucherDetail(BaseModel):
+    
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.current_quantity = self.quantity
+    
     quantity = models.PositiveIntegerField()
     price = models.PositiveIntegerField()
     
     article = models.ForeignKey(to=Article, on_delete=models.DO_NOTHING)
     voucher = models.ForeignKey(to=SellVoucher, related_name="details", on_delete=models.CASCADE)
+    
+    def __str__(self) -> str:
+        return f"{self.voucher} ({self.article})"

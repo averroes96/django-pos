@@ -1,7 +1,91 @@
-from rest_framework.serializers import ModelSerializer, CharField
+from rest_framework.serializers import (
+    ModelSerializer, 
+    CharField, 
+    PrimaryKeyRelatedField, 
+    CurrentUserDefault
+)
 
-from sells.models import Client
+from sells.models import Client, SellVoucher, SellVoucherDetail
 
+
+class SellVoucherDetailSerializer(ModelSerializer):
+    
+    id = CharField()
+    
+    class Meta:
+        model = SellVoucherDetail
+        fields = ["id", "article", "quantity", "price"]
+
+
+class SellVoucherDetailCreateSerializer(ModelSerializer):
+    
+    class Meta:
+        model = SellVoucherDetail
+        fields = ["article", "quantity", "price"]
+
+
+class SellVoucherListSerializer(ModelSerializer):
+    
+    class Meta:
+        model = SellVoucher
+        fields = "__all__"
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class SellVoucherCreateSerializer(ModelSerializer):
+    
+    details = SellVoucherDetailCreateSerializer(many=True)
+    agent = PrimaryKeyRelatedField(read_only=True, default=CurrentUserDefault())
+    
+    def create(self, validated_data):
+        
+        details = validated_data.get("details")
+        
+        paid = validated_data.get("paid")
+        with_debt = validated_data.get("with_debt", False)
+        client = validated_data.get("client")
+        number = validated_data.get("number")
+        agent = validated_data.get("agent")
+        total = sum([detail.get("price") * detail.get("quantity") for detail in details])
+        
+        sell_voucher = SellVoucher.objects.create(
+            number=number,
+            paid=paid,
+            total=total,
+            with_debt=with_debt,
+            client=client,
+            agent=agent
+        )
+        sell_voucher.create_details(details)
+        
+        return sell_voucher
+    
+    class Meta:
+        model = SellVoucher
+        fields = ["number", "total", "paid", "rest", "with_debt", "client", "agent" ,"details"]
+        read_only_fields = ["id", "total", "created_at", "rest", "updated_at", "agent"]
+
+
+class SellVoucherRetrieveSerializer(ModelSerializer):
+    
+    details = SellVoucherDetailSerializer(many=True)
+    agent = PrimaryKeyRelatedField(read_only=True, default=CurrentUserDefault())
+    
+    def update(self, instance, validated_data):
+        details = validated_data.pop("details")
+        
+        instance.total = sum([detail.get("price") * detail.get("quantity") for detail in details])
+        super().update(instance, validated_data)
+        
+        instance.update_details(details)
+        
+        return instance
+
+
+    class Meta:
+        model = SellVoucher
+        fields = ["id", "number", "total", "paid", "rest", "with_debt", "client", "agent", "details"]
+        read_only_fields = ["id", "total", "client", "agent", "rest", "created_at", "updated_at"]
 
 
 class ClientSerializer(ModelSerializer):
