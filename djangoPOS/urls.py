@@ -50,7 +50,8 @@ urlpatterns = [
     path('api/products/', include('products.urls')),
     path('api/buys/', include('buys.urls')),
     path('api/sells/', include('sells.urls')),
-    path('api/transactions/', include('transactions.urls'))
+    path('api/transactions/', include('transactions.urls')),
+    path('api/stats/', include('stats.urls'))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
