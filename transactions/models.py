@@ -1,8 +1,6 @@
 from django.db import models
 
-from base.models import BaseModel
-
-from agents.models import Agent
+from base.models import Transaction
 
 from sells.models import Client
 
@@ -11,27 +9,17 @@ from buys.models import Supplier
 # Create your models here.
 
 
-class Transaction(BaseModel):
-    value = models.IntegerField()
-    agent = models.ForeignKey(to=Agent, null=True, on_delete=models.SET_NULL)
-    
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.current_value = self.value
-    
-    class Meta:
-        abstract = True
-
-
 class ClientTransaction(Transaction):
+    
     client = models.ForeignKey(to=Client, on_delete=models.DO_NOTHING)
 
 
 class SupplierTransaction(Transaction):
+    
     supplier = models.ForeignKey(to=Supplier, on_delete=models.DO_NOTHING)
 
 
-class Expense(BaseModel):
+class Expense(Transaction):
     
     class Types:
         EMPLOYEES = 1
@@ -40,9 +28,7 @@ class Expense(BaseModel):
         (Types.EMPLOYEES, "employees"),
     )
     
-    value = models.IntegerField()
     type = models.IntegerField(choices=EXPENSE_TYPES)
     note = models.TextField()
     
-    agent = models.ForeignKey(to=Agent, on_delete=models.DO_NOTHING)
     

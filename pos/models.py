@@ -9,6 +9,7 @@ from products.models import Article
 # Create your models here.
 
 class SaleVoucher(Voucher):
+    
     client = models.ForeignKey(to=Client, null=True, on_delete=models.SET_NULL)
 
 
