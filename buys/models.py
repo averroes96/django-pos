@@ -58,6 +58,9 @@ class BuyVoucher(Voucher):
         # delete removed details
         self.details.exclude(id__in=detail_ids).delete()
 
+    class Meta:
+        get_latest_by = ['created_at']
+        ordering = ['-created_at']
 
 class BuyVoucherDetail(BaseModel):
     
