@@ -12,7 +12,7 @@ class IsAdminOrAgent(BasePermission):
     
     def has_permission(self, request: HttpRequest, view):
                 
-        if request.user.__class__ == "AnonymousUser":
+        if request.user.__class__.__name__ == "AnonymousUser":
             return False
         
         if request.user.is_staff:

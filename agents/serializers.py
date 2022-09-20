@@ -1,9 +1,11 @@
 from django.contrib.auth.models import User, Permission
 from django.db.transaction import atomic
+from django.db import DatabaseError
 
-from rest_framework.serializers import ModelSerializer, CharField, ListField
+from rest_framework.serializers import ModelSerializer, CharField, ListField, ValidationError
 
 from agents.models import Agent
+from agents.constants import USER_DATABASE_ERROR
 
 
 
@@ -20,19 +22,23 @@ class AgentSerializer(ModelSerializer):
     def create(self, validated_data):
         # Direct assignment to the forward side of a many-to-many set is prohibited. 
         # Use user_permissions.set() instead.
-        permissions_list = validated_data.get("user").pop("user_permissions")
+        permissions_list = validated_data.get("user").pop("user_permissions", None)
         
         # create agent's user
-        user = User.objects.create(**validated_data.get("user"))
+        try:
+            user = User.objects.create(**validated_data.get("user"))
+        except DatabaseError:
+            raise ValidationError({"detail": USER_DATABASE_ERROR})
         
         # set user permissions
-        permissions_all = permissions_list.get("values")
-        
         if permissions_list:
-            permissions = Permission.objects.filter(
-                codename__in=permissions_all
-            )
-            if permissions: user.user_permissions.set(permissions)
+            permissions_all = permissions_list.get("values")
+            
+            if permissions_list:
+                permissions = Permission.objects.filter(
+                    codename__in=permissions_all
+                )
+                if permissions: user.user_permissions.set(permissions)
         
         # create agent
         agent = Agent(phone=validated_data.get("phone"), address=validated_data.get("address"), user=user)

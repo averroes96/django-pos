@@ -21,7 +21,6 @@ class SellsPermission(BasePermission):
         :return: True or False
         """
         user = request.user
-        permission = Permission.objects.get(codename=Agent.Permission.SELLS_PERMISSION_CODENAME)
         
         if user.has_perm(f"agents.{Agent.Permission.SELLS_PERMISSION_CODENAME}"):
             return True

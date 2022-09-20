@@ -12,7 +12,7 @@ class ClientAdmin(admin.ModelAdmin):
 
 
 @admin.register(SellVoucher)
-class BuyVoucherAdmin(admin.ModelAdmin):
+class SellVoucherAdmin(admin.ModelAdmin):
     
     list_display = ["number", "total", "paid", "rest", "with_debt" , "client"]
     search_fields = ["number"]
@@ -21,7 +21,7 @@ class BuyVoucherAdmin(admin.ModelAdmin):
 
 
 @admin.register(SellVoucherDetail)
-class BuyVoucherDetailAdmin(admin.ModelAdmin):
+class SellVoucherDetailAdmin(admin.ModelAdmin):
     
     list_display = ["voucher", "article", "price", "quantity"]
     list_filter = ["voucher", "article"]

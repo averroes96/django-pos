@@ -36,7 +36,7 @@ class Article(BaseModel):
     quantity = models.IntegerField(default=0)
     quantity_minimum = models.IntegerField(default=0)
     stock_negative = models.BooleanField(default=False)
-    margin = models.DecimalField(max_digits=10, decimal_places=2)
+    margin = models.DecimalField(default="0.00", max_digits=10, decimal_places=2)
     buy_price = models.PositiveIntegerField()
     sell_price = models.PositiveIntegerField()
     

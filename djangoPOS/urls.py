@@ -50,6 +50,7 @@ urlpatterns = [
     path('api/products/', include('products.urls')),
     path('api/buys/', include('buys.urls')),
     path('api/sells/', include('sells.urls')),
+    path('api/pos/', include('pos.urls')),
     path('api/transactions/', include('transactions.urls')),
     path('api/stats/', include('stats.urls'))
 ]

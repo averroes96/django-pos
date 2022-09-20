@@ -30,7 +30,7 @@ class SellVoucherViewSet(ModelViewSet):
         elif self.action == "list":
             return SellVoucherListSerializer
         else:
-            return SellVoucherListSerializer
+            return SellVoucherRetrieveSerializer
     
     def get_queryset(self):
         return SellVoucher.objects.all()
