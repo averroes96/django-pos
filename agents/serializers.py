@@ -2,7 +2,13 @@ from django.contrib.auth.models import User, Permission
 from django.db.transaction import atomic
 from django.db import DatabaseError
 
-from rest_framework.serializers import ModelSerializer, CharField, ListField, ValidationError
+from rest_framework.serializers import (
+    ModelSerializer, 
+    CharField, 
+    ListField, 
+    ValidationError,
+    RegexField,
+)
 
 from agents.models import Agent
 from agents.constants import USER_DATABASE_ERROR
@@ -10,6 +16,8 @@ from agents.constants import USER_DATABASE_ERROR
 
 
 class AgentSerializer(ModelSerializer):
+    
+    phone = RegexField(regex=r'^\+?1?\d{9,15}$', required=False)
     
     username = CharField(source="user.username")
     password = CharField(source="user.password", write_only=True)

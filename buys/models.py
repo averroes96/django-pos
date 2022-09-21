@@ -32,7 +32,7 @@ class BuyVoucher(Voucher):
                 voucher=self,
                 quantity=detail.get("quantity"),
                 article=detail.get("article"),
-                price=detail.get("price")
+                buy_price=detail.get("buy_price")
             )
     
     def update_details(self, details):
@@ -45,14 +45,14 @@ class BuyVoucher(Voucher):
                 
                 detail_object = self.details.get(id=detail.get("id"))
                 detail_object.quantity = detail.get("quantity")
-                detail_object.price = detail.get("price")
+                detail_object.price = detail.get("buy_price")
                 detail_object.save()
             else:
                 BuyVoucherDetail.objects.create(
                     voucher=self,
                     article=detail.get("article"),
                     quantity=detail.get("quantity"),
-                    price=detail.get("price")
+                    buy_price=detail.get("buy_price")
                 )
         
         # delete removed details
@@ -67,10 +67,11 @@ class BuyVoucherDetail(BaseModel):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.current_quantity = self.quantity
-        self.current_price = self.price
+        self.current_price = self.buy_price
     
     quantity = models.PositiveIntegerField()
-    price = models.PositiveIntegerField()
+    sell_price = models.PositiveIntegerField()
+    buy_price = models.PositiveIntegerField()
     
     article = models.ForeignKey(to=Article, on_delete=models.DO_NOTHING)
     voucher = models.ForeignKey(to=BuyVoucher, related_name="details", on_delete=models.CASCADE)

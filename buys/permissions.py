@@ -1,7 +1,6 @@
-from django.contrib.auth.models import Permission
-
 from rest_framework.permissions import BasePermission
 from rest_framework.request import HttpRequest
+from rest_framework.views import View
 
 from buys.constants import BUY_PERMISSION_MESSAGE
 
@@ -21,8 +20,22 @@ class BuysPermission(BasePermission):
         :return: A boolean value.
         """
         user = request.user
+        buy_permission_codename = f"agents.{Agent.Permission.BUYS_PERMISSION_CODENAME}"
+        buy_with_debt_permission_codename = f"agents.{Agent.Permission.BUYS_DEBT_PERMISSION_CODENAME}"
         
-        if user.has_perm(f"agents.{Agent.Permission.BUYS_PERMISSION_CODENAME}"):
-            return True
+        print(view.action)
         
-        return False
+        if view.action in ["create", "update", "partial_update"]: # check permissions
+            if (
+                user.has_perm(buy_permission_codename) and
+                user.has_perm(buy_with_debt_permission_codename)
+            ): # check user is an agent
+                try:
+                    Agent.objects.get(user=user)
+                    return True
+                except Agent.DoesNotExist:
+                    return False
+        elif user.has_perm(buy_permission_codename):
+                return True
+        else:
+            return False

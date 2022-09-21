@@ -7,6 +7,8 @@ from rest_framework.serializers import (
 
 from buys.models import Supplier, BuyVoucher, BuyVoucherDetail
 
+from agents.models import Agent
+
 
 
 class SupplierSerializer(ModelSerializer):
@@ -39,13 +41,13 @@ class BuyVoucherDetailSerializer(ModelSerializer):
     
     class Meta:
         model = BuyVoucherDetail
-        fields = ["id", "article", "quantity", "price"]
+        fields = ["id", "article", "quantity", "buy_price"]
 
 class BuyVoucherDetailCreateSerializer(ModelSerializer):
     
     class Meta:
         model = BuyVoucherDetail
-        fields = ["article", "quantity", "price"]
+        fields = ["article", "quantity", "buy_price"]
 
 
 class BuyVoucherListSerializer(ModelSerializer):
@@ -59,7 +61,7 @@ class BuyVoucherListSerializer(ModelSerializer):
 class BuyVoucherCreateSerializer(ModelSerializer):
     
     details = BuyVoucherDetailCreateSerializer(many=True)
-    agent = PrimaryKeyRelatedField(read_only=True, default=CurrentUserDefault())
+    agent = PrimaryKeyRelatedField(read_only=True, default=CurrentUserDefault()) # useless
     
     def create(self, validated_data):
         
@@ -69,8 +71,9 @@ class BuyVoucherCreateSerializer(ModelSerializer):
         with_debt = validated_data.get("with_debt", False)
         supplier = validated_data.get("supplier")
         number = validated_data.get("number")
-        agent = validated_data.get("agent")
-        total = sum([detail.get("price") * detail.get("quantity") for detail in details])
+        
+        agent = Agent.objects.get(user=self.context.get("request").user)
+        total = sum([detail.get("buy_price") * detail.get("quantity") for detail in details])
         
         buy_voucher = BuyVoucher.objects.create(
             number=number,
@@ -97,8 +100,9 @@ class BuyVoucherRetrieveSerializer(ModelSerializer):
     
     def update(self, instance, validated_data):
         details = validated_data.pop("details")
-        
+        instance.agent = Agent.objects.get(user=self.context.get("request").user)
         instance.total = sum([detail.get("price") * detail.get("quantity") for detail in details])
+        
         super().update(instance, validated_data)
         
         instance.update_details(details)
