@@ -26,7 +26,7 @@ def post_buy_voucher_detail_save(sender, instance: BuyVoucherDetail, created, *a
         article.buy_price = instance.buy_price
         article.quantity += instance.quantity
         article.save()
-    elif (instance.current_quantity != instance.quantity or instance.current_price != instance.buy_price):
+    elif (instance.current_quantity != instance.quantity or instance.current_buy_price != instance.buy_price):
         article.buy_price = instance.buy_price
         article.quantity -= instance.current_quantity
         article.quantity += instance.quantity

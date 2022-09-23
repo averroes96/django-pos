@@ -6,6 +6,8 @@ from rest_framework.serializers import (
 )
 from rest_framework.serializers import ValidationError
 
+from django.db.transaction import atomic
+
 from pos.models import SaleVoucher, SaleVoucherDetail
 from pos.constants import DETAIL_CANNOT_BE_EMPTY
 
@@ -91,6 +93,7 @@ class SaleVoucherRetrieveSerializer(ModelSerializer):
         
         return super().validate(attrs)
     
+    @atomic
     def update(self, instance, validated_data):
         
         details = validated_data.pop("details")

@@ -67,7 +67,7 @@ class BuyVoucherDetail(BaseModel):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.current_quantity = self.quantity
-        self.current_price = self.buy_price
+        self.current_buy_price = self.buy_price
     
     quantity = models.PositiveIntegerField()
     sell_price = models.PositiveIntegerField()

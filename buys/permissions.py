@@ -1,6 +1,5 @@
 from rest_framework.permissions import BasePermission
 from rest_framework.request import HttpRequest
-from rest_framework.views import View
 
 from buys.constants import BUY_PERMISSION_MESSAGE
 
