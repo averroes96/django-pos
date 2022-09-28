@@ -1,4 +1,4 @@
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, pre_delete
 from django.dispatch import receiver
 
 from sells.models import Client, SellVoucher, SellVoucherDetail
@@ -12,18 +12,31 @@ def pre_client_save(sender, instance: Client, *args, **kwargs):
         instance.balance_initial = instance.balance
 
 
+@receiver(pre_save, sender=SellVoucherDetail)
+def pre_sell_voucher_detail_save(sender, instance: SellVoucherDetail, *args, **kwargs):
+    instance.buy_price = instance.article.buy_price
+
+
 @receiver(post_save, sender=SellVoucherDetail)
 def post_sell_voucher_detail_save(sender, instance: SellVoucherDetail, created, *args, **kwargs):
     
     article = instance.article
     
     if created:
+        article.sell_price = instance.sell_price
         article.quantity -= instance.quantity
         article.save()
     elif (instance.current_quantity != instance.quantity):
+        article.sell_price = instance.sell_price
         article.quantity += instance.current_quantity
         article.quantity -= instance.quantity
         article.save()
+
+
+@receiver(pre_delete, sender=SellVoucherDetail)
+def pre_buy_voucher_detail_delete(sender, instance: SellVoucherDetail, *args, **kwargs):
+    instance.article.quantity += instance.quantity
+    instance.article.save()
 
 
 @receiver(pre_save, sender=SellVoucher)

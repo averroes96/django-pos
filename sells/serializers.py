@@ -7,6 +7,8 @@ from rest_framework.serializers import (
 
 from sells.models import Client, SellVoucher, SellVoucherDetail
 
+from agents.models import Agent
+
 
 class SellVoucherDetailSerializer(ModelSerializer):
     
@@ -14,14 +16,14 @@ class SellVoucherDetailSerializer(ModelSerializer):
     
     class Meta:
         model = SellVoucherDetail
-        fields = ["id", "article", "quantity", "price"]
+        fields = ["id", "article", "quantity", "sell_price"]
 
 
 class SellVoucherDetailCreateSerializer(ModelSerializer):
     
     class Meta:
         model = SellVoucherDetail
-        fields = ["article", "quantity", "price"]
+        fields = ["article", "quantity", "sell_price"]
 
 
 class SellVoucherListSerializer(ModelSerializer):
@@ -35,17 +37,16 @@ class SellVoucherListSerializer(ModelSerializer):
 class SellVoucherCreateSerializer(ModelSerializer):
     
     details = SellVoucherDetailCreateSerializer(many=True)
-    agent = PrimaryKeyRelatedField(read_only=True, default=CurrentUserDefault())
     
     def create(self, validated_data):
         
         details = validated_data.get("details")
         
-        paid = validated_data.get("paid")
+        paid = validated_data.get("paid") 
         with_debt = validated_data.get("with_debt", False)
         client = validated_data.get("client")
         number = validated_data.get("number")
-        agent = validated_data.get("agent")
+        agent = Agent.objects.get(user=self.context.get("request").user)
         total = sum([detail.get("price") * detail.get("quantity") for detail in details])
         
         sell_voucher = SellVoucher.objects.create(
@@ -69,12 +70,13 @@ class SellVoucherCreateSerializer(ModelSerializer):
 class SellVoucherRetrieveSerializer(ModelSerializer):
     
     details = SellVoucherDetailSerializer(many=True)
-    agent = PrimaryKeyRelatedField(read_only=True, default=CurrentUserDefault())
     
     def update(self, instance, validated_data):
         details = validated_data.pop("details")
         
         instance.total = sum([detail.get("price") * detail.get("quantity") for detail in details])
+        instance.agent = Agent.objects.get(user=self.context.get("request").user)
+        
         super().update(instance, validated_data)
         
         instance.update_details(details)

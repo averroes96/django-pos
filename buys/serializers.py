@@ -61,7 +61,6 @@ class BuyVoucherListSerializer(ModelSerializer):
 class BuyVoucherCreateSerializer(ModelSerializer):
     
     details = BuyVoucherDetailCreateSerializer(many=True)
-    agent = PrimaryKeyRelatedField(read_only=True, default=CurrentUserDefault()) # useless
     
     def create(self, validated_data):
         

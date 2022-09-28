@@ -66,9 +66,11 @@ class SellVoucherDetail(BaseModel):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.current_quantity = self.quantity
+        self.current_sell_price = self.sell_price
     
     quantity = models.PositiveIntegerField()
-    price = models.PositiveIntegerField()
+    sell_price = models.PositiveIntegerField()
+    buy_price = models.PositiveIntegerField()
     
     article = models.ForeignKey(to=Article, on_delete=models.DO_NOTHING)
     voucher = models.ForeignKey(to=SellVoucher, related_name="details", on_delete=models.CASCADE)

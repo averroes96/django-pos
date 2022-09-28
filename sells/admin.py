@@ -23,6 +23,6 @@ class SellVoucherAdmin(admin.ModelAdmin):
 @admin.register(SellVoucherDetail)
 class SellVoucherDetailAdmin(admin.ModelAdmin):
     
-    list_display = ["voucher", "article", "price", "quantity"]
+    list_display = ["voucher", "article", "sell_price", "quantity"]
     list_filter = ["voucher", "article"]
     list_per_page = 16

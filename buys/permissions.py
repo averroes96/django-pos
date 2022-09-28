@@ -22,8 +22,6 @@ class BuysPermission(BasePermission):
         buy_permission_codename = f"agents.{Agent.Permission.BUYS_PERMISSION_CODENAME}"
         buy_with_debt_permission_codename = f"agents.{Agent.Permission.BUYS_DEBT_PERMISSION_CODENAME}"
         
-        print(view.action)
-        
         if view.action in ["create", "update", "partial_update"]: # check permissions
             if (
                 user.has_perm(buy_permission_codename) and
