@@ -1,11 +1,11 @@
 from rest_framework.serializers import (
     ModelSerializer, 
-    CharField, 
-    PrimaryKeyRelatedField, 
-    CurrentUserDefault
+    CharField,
+    ValidationError
 )
 
 from sells.models import Client, SellVoucher, SellVoucherDetail
+from sells.constants import SELL_DEBT_PERMISSION_ERROR
 
 from agents.models import Agent
 
@@ -38,6 +38,25 @@ class SellVoucherCreateSerializer(ModelSerializer):
     
     details = SellVoucherDetailCreateSerializer(many=True)
     
+    def validate(self, attrs):
+        details = attrs.get("details")
+        paid = attrs.get("paid")
+        
+        attrs["total"] = sum([
+            detail.get("sell_price") * detail.get("quantity") for detail in details
+        ]) # calculating voucher total
+        with_debt = attrs["total"] > paid
+        
+        if not with_debt: # if not with debt ignore permission check
+            return super().validate(attrs)
+        
+        user = self.context["request"].user
+        
+        if user.has_perm(f"agents.{Agent.Permission.SELLS_DEBT_PERMISSION_CODENAME}"):
+            return super().validate(attrs)
+        
+        raise ValidationError(detail={"detail": SELL_DEBT_PERMISSION_ERROR.get("detail")})
+    
     def create(self, validated_data):
         
         details = validated_data.get("details")
@@ -46,8 +65,8 @@ class SellVoucherCreateSerializer(ModelSerializer):
         with_debt = validated_data.get("with_debt", False)
         client = validated_data.get("client")
         number = validated_data.get("number")
+        total = validated_data.get("total") # i'm passing the total through `.validate`
         agent = Agent.objects.get(user=self.context.get("request").user)
-        total = sum([detail.get("price") * detail.get("quantity") for detail in details])
         
         sell_voucher = SellVoucher.objects.create(
             number=number,
@@ -71,10 +90,29 @@ class SellVoucherRetrieveSerializer(ModelSerializer):
     
     details = SellVoucherDetailSerializer(many=True)
     
+    def validate(self, attrs):
+        details = attrs.get("details")
+        paid = attrs.get("paid")
+        
+        attrs["total"] = sum([
+            detail.get("sell_price") * detail.get("quantity") for detail in details
+        ]) # calculating voucher total
+        with_debt = attrs["total"] > paid
+        
+        if not with_debt: # if not with debt ignore permission check
+            return super().validate(attrs)
+        
+        user = self.context["request"].user
+        
+        if user.has_perm(f"agents.{Agent.Permission.SELLS_DEBT_PERMISSION_CODENAME}"):
+            return super().validate(attrs)
+        
+        raise ValidationError(detail={"detail": SELL_DEBT_PERMISSION_ERROR.get("detail")})
+    
     def update(self, instance, validated_data):
         details = validated_data.pop("details")
         
-        instance.total = sum([detail.get("price") * detail.get("quantity") for detail in details])
+        instance.total = validated_data.get("total") # i'm passing the total through `.validate`
         instance.agent = Agent.objects.get(user=self.context.get("request").user)
         
         super().update(instance, validated_data)

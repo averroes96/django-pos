@@ -12,25 +12,21 @@ def pre_supplier_save(sender, instance: Supplier, *args, **kwargs):
         instance.balance_initial = instance.balance
 
 
-@receiver(pre_save, sender=BuyVoucherDetail)
-def pre_buy_voucher_detail_save(sender, instance: BuyVoucherDetail, *args, **kwargs):
-    instance.sell_price = instance.article.sell_price
-
-
 @receiver(post_save, sender=BuyVoucherDetail)
 def post_buy_voucher_detail_save(sender, instance: BuyVoucherDetail, created, *args, **kwargs):
     
     article = instance.article
     
+    article.buy_price = instance.buy_price
+    article.sell_price = instance.sell_price
+    
     if created:
-        article.buy_price = instance.buy_price
         article.quantity += instance.quantity
-        article.save()
-    elif (instance.current_quantity != instance.quantity or instance.current_buy_price != instance.buy_price):
-        article.buy_price = instance.buy_price
+    elif instance.current_quantity != instance.quantity:
         article.quantity -= instance.current_quantity
         article.quantity += instance.quantity
-        article.save()
+    
+    article.save()
 
 
 @receiver(pre_delete, sender=BuyVoucherDetail)

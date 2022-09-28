@@ -31,7 +31,8 @@ class SellVoucher(Voucher):
                 voucher=self,
                 quantity=detail.get("quantity"),
                 article=detail.get("article"),
-                price=detail.get("price")
+                sell_price=detail.get("sell_price"),
+                buy_price=detail.get("article").buy_price
             )
     
     def update_details(self, details):
@@ -44,14 +45,15 @@ class SellVoucher(Voucher):
                 
                 detail_object = self.details.get(id=detail.get("id"))
                 detail_object.quantity = detail.get("quantity")
-                detail_object.price = detail.get("price")
+                detail_object.sell_price = detail.get("sell_price")
                 detail_object.save()
             else:
                 SellVoucherDetail.objects.create(
                     voucher=self,
                     article=detail.get("article"),
                     quantity=detail.get("quantity"),
-                    price=detail.get("price")
+                    sell_price=detail.get("sell_price"),
+                    buy_price=detail.get("article").buy_price
                 )
         
         # delete removed details

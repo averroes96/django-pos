@@ -1,7 +1,15 @@
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, pre_delete
 from django.dispatch import receiver
 
 from pos.models import SaleVoucher, SaleVoucherDetail
+
+
+
+@receiver(pre_delete, sender=SaleVoucherDetail)
+def pre_sell_voucher_detail_delete(sender, instance: SaleVoucherDetail, *args, **kwargs):
+    instance.article.quantity += instance.quantity
+    instance.article.save()
+
 
 @receiver(post_save, sender=SaleVoucherDetail)
 def post_sale_voucher_detail_save(sender, instance: SaleVoucherDetail, created, *args, **kwargs):

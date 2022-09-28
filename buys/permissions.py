@@ -18,21 +18,9 @@ class BuysPermission(BasePermission):
         :param view: The view that the permission is being checked against
         :return: A boolean value.
         """
-        user = request.user
         buy_permission_codename = f"agents.{Agent.Permission.BUYS_PERMISSION_CODENAME}"
-        buy_with_debt_permission_codename = f"agents.{Agent.Permission.BUYS_DEBT_PERMISSION_CODENAME}"
         
-        if view.action in ["create", "update", "partial_update"]: # check permissions
-            if (
-                user.has_perm(buy_permission_codename) and
-                user.has_perm(buy_with_debt_permission_codename)
-            ): # check user is an agent
-                try:
-                    Agent.objects.get(user=user)
-                    return True
-                except Agent.DoesNotExist:
-                    return False
-        elif user.has_perm(buy_permission_codename):
+        if request.user.has_perm(buy_permission_codename):
                 return True
         else:
             return False

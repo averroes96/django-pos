@@ -12,11 +12,6 @@ def pre_client_save(sender, instance: Client, *args, **kwargs):
         instance.balance_initial = instance.balance
 
 
-@receiver(pre_save, sender=SellVoucherDetail)
-def pre_sell_voucher_detail_save(sender, instance: SellVoucherDetail, *args, **kwargs):
-    instance.buy_price = instance.article.buy_price
-
-
 @receiver(post_save, sender=SellVoucherDetail)
 def post_sell_voucher_detail_save(sender, instance: SellVoucherDetail, created, *args, **kwargs):
     
@@ -34,7 +29,7 @@ def post_sell_voucher_detail_save(sender, instance: SellVoucherDetail, created, 
 
 
 @receiver(pre_delete, sender=SellVoucherDetail)
-def pre_buy_voucher_detail_delete(sender, instance: SellVoucherDetail, *args, **kwargs):
+def pre_sell_voucher_detail_delete(sender, instance: SellVoucherDetail, *args, **kwargs):
     instance.article.quantity += instance.quantity
     instance.article.save()
 

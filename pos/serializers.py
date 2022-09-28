@@ -42,8 +42,7 @@ class SaleVoucherListSerializer(ModelSerializer):
 class SaleVoucherCreateSerializer(ModelSerializer):
     
     details = SaleVoucherDetailCreateSerializer(required=True, many=True)
-    agent = PrimaryKeyRelatedField(read_only=True, default=CurrentUserDefault()) # useless
-    
+        
     def validate(self, attrs):
         details = attrs.get("details")
         
