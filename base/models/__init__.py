@@ -112,7 +112,7 @@ class Voucher(BaseModel):
         
         total_sum = cls.total_sum(queryset)
         buy_sum = sum([
-            detail.article.buy_price for voucher in queryset for detail in voucher.details.all()
+            detail.buy_price for voucher in queryset for detail in voucher.details.all()
         ])
         
         return total_sum - buy_sum

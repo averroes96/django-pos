@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.request import HttpRequest
 from rest_framework.response import Response
 
-from rest_framework.permissions import IsAdminUser
+from stats.permissions import StatsPermission
 
 from buys.models import BuyVoucher
 
@@ -17,7 +17,7 @@ from transactions.models import Expense, ClientTransaction, SupplierTransaction
 
 class BuyStatsView(APIView):
     
-    permission_classes = [IsAdminUser]
+    permission_classes = [StatsPermission]
     
     def get(self, request: HttpRequest):
         
@@ -31,7 +31,7 @@ class BuyStatsView(APIView):
 
 class SellStatsView(APIView):
     
-    permission_classes = [IsAdminUser]
+    permission_classes = [StatsPermission]
     
     def get(self, request: HttpRequest):
         
@@ -45,7 +45,7 @@ class SellStatsView(APIView):
 
 class ReportStatsView(APIView):
     
-    permission_classes = [IsAdminUser]
+    permission_classes = [StatsPermission]
     
     def get(self, request: HttpRequest):
         
