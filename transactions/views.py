@@ -28,26 +28,6 @@ class ClientTransactionViewSet(ModelViewSet):
     
     def get_queryset(self):
         return ClientTransaction.objects.all()
-    
-    @atomic
-    def create(self, request: HttpRequest, *args, **kwargs):
-        agent = Agent.objects.get(user=request.user)
-        request.data.update({"agent" : agent.id})
-        
-        return super().create(request, *args, **kwargs)
-    
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT, 
-        properties={
-            'value': openapi.Schema(type=openapi.TYPE_INTEGER, description=0),
-        }
-    ))
-    @atomic
-    def partial_update(self, request, *args, **kwargs):
-        agent = Agent.objects.get(user=request.user)
-        request.data.update({"agent" : agent.id})
-        
-        return super().partial_update(request, *args, **kwargs)
 
 
 class SupplierTransactionViewSet(ModelViewSet):
@@ -57,26 +37,6 @@ class SupplierTransactionViewSet(ModelViewSet):
     
     def get_queryset(self):
         return SupplierTransaction.objects.all()
-    
-    @atomic
-    def create(self, request: HttpRequest, *args, **kwargs):
-        agent = get_object_or_404(Agent, user=request.user)
-        request.data.update({"agent" : agent})
-        
-        return super().create(request, *args, **kwargs)
-    
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT, 
-        properties={
-            'value': openapi.Schema(type=openapi.TYPE_INTEGER, description=0),
-        }
-    ))
-    @atomic
-    def partial_update(self, request, *args, **kwargs):
-        agent = Agent.objects.get(user=request.user)
-        request.data.update({"agent" : agent.id})
-        
-        return super().partial_update(request, *args, **kwargs)
 
 
 class ExpenseViewSet(ModelViewSet):
@@ -86,17 +46,3 @@ class ExpenseViewSet(ModelViewSet):
     
     def get_queryset(self):
         return Expense.objects.all()
-
-    @atomic
-    def create(self, request: HttpRequest, *args, **kwargs):
-        agent = get_object_or_404(Agent, user=request.user)
-        request.data.update({"agent" : agent.id})
-        
-        return super().create(request, *args, **kwargs)
-    
-    @atomic
-    def partial_update(self, request, *args, **kwargs):
-        agent = Agent.objects.get(user=request.user)
-        request.data.update({"agent" : agent.id})
-        
-        return super().partial_update(request, *args, **kwargs)
