@@ -2,9 +2,10 @@ from datetime import date
 import uuid
 
 from django.db import models
-from django.db.models import Sum, Count, QuerySet
+from django.db.models import Sum
 from django.utils import timezone
 
+from base.querysets import VoucherQuerySet
 
 
 class BaseModel(models.Model):
@@ -51,6 +52,7 @@ class BaseModel(models.Model):
         get_latest_by = ['created_at']
         ordering = ['-created_at']
 
+
 class Partner(BaseModel):
     
     first_name = models.CharField(max_length=64, null=True)
@@ -75,6 +77,16 @@ class Partner(BaseModel):
 class Voucher(BaseModel):
     from agents.models import Agent
     
+    total = models.PositiveIntegerField(default=0)
+    number = models.CharField(max_length=32)
+    paid = models.PositiveIntegerField(default=0)
+    rest = models.PositiveIntegerField(default=0)
+    with_debt = models.BooleanField(default=False)
+    
+    agent = models.ForeignKey(to=Agent, null=True, on_delete=models.SET_NULL)
+    
+    objects = VoucherQuerySet.as_manager()
+    
     def calculate_rest(self):
         """
         It takes the total amount of the bill and subtracts the amount that has been paid
@@ -90,27 +102,19 @@ class Voucher(BaseModel):
         """
         return self.paid + self.rest
     
-    total = models.PositiveIntegerField(default=0)
-    number = models.CharField(max_length=32)
-    paid = models.PositiveIntegerField(default=0)
-    rest = models.PositiveIntegerField(default=0)
-    with_debt = models.BooleanField(default=False)
-    
-    agent = models.ForeignKey(to=Agent, null=True, on_delete=models.SET_NULL)
-    
     @classmethod
-    def profits(cls, queryset: QuerySet) -> int:
+    def profits(cls, queryset: VoucherQuerySet) -> int:
         """
-        > It returns the total sum of the queryset minus the sum of the buy prices of all the articles in
-        the queryset
+        > It returns the total sum of all the vouchers in the queryset minus the total sum of the buy prices
+        of all the details in the queryset
         
         :param cls: The class of the model that the manager is attached to
-        :param queryset: The queryset to be used for the calculation
+        :param queryset: The queryset of the model you want to get the total sum of
         :type queryset: QuerySet
-        :return: A dictionary with the key "profit" and the value of the profit.
+        :return: The total sum of all the vouchers in the queryset.
         """
         
-        total_sum = cls.total_sum(queryset)
+        total_sum = queryset.total_sum()
         buy_sum = sum([
             detail.buy_price for voucher in queryset for detail in voucher.details.all()
         ])
@@ -129,87 +133,15 @@ class Voucher(BaseModel):
         :return: A dictionary with the keys: total_sum, vouchers_count, articles_count, quantity_sum,
         rest_sum
         """
-        queryset = cls.between(start_date, end_date)
+        queryset : VoucherQuerySet = cls.between(start_date, end_date)
         
         return {
-            "total_sum": cls.total_sum(queryset),
-            "vouchers_count": cls.vouchers_count(queryset),
-            "articles_count": cls.articles_count(queryset),
-            "quantity_sum": cls.quantity_sum(queryset),
-            "rest_sum": cls.rest_sum(queryset),
+            "total_sum": queryset.total_sum(),
+            "vouchers_count": queryset.vouchers_count(),
+            "articles_count": queryset.articles_count(),
+            "quantity_sum": queryset.quantity_sum(),
+            "rest_sum": queryset.rest_sum(),
         }
-    
-    @classmethod
-    def total_sum(cls, queryset: QuerySet):
-        """
-        > It returns the total sum of the queryset
-        
-        :param cls: The class of the model that the queryset is for
-        :param queryset: The queryset to be used to calculate the total sum
-        :type queryset: QuerySet
-        :return: A dictionary with the key "total_sum" and the value of the sum of the total field.
-        """
-        
-        total_sum = queryset.aggregate(total_sum=Sum("total")).get("total_sum")
-        
-        return total_sum if total_sum else 0
-    
-    @classmethod
-    def vouchers_count(cls, queryset: QuerySet):
-        """
-        > It returns the number of vouchers in a queryset
-        
-        :param cls: The class of the model that the queryset is for
-        :param queryset: The queryset to be used to calculate the count
-        :type queryset: QuerySet
-        :return: A dictionary with the key "vouchers_count" and the value of the count of the queryset.
-        """
-        
-        return queryset.aggregate(vouchers_count=Count("id")).get("vouchers_count", 0)
-
-    @classmethod
-    def articles_count(cls, queryset: QuerySet):
-        """
-        > It returns the number of articles in a queryset
-        
-        :param cls: The class of the model that the queryset is for
-        :param queryset: The queryset to be annotated
-        :type queryset: QuerySet
-        :return: A dictionary with the key "articles_count" and the value of the count of the articles.
-        """
-        
-        return queryset.aggregate(
-            articles_count=Count("details__article", distinct=True)
-        ).get("articles_count", 0)
-
-    @classmethod
-    def quantity_sum(cls, queryset: QuerySet):
-        """
-        > It returns the sum of the quantity of all the details of the queryset
-        
-        :param cls: The class of the model that the queryset is for
-        :param queryset: The queryset to be used for the aggregation
-        :type queryset: QuerySet
-        :return: A dictionary with the key "quantity_sum" and the value of the sum of the quantity of all
-        the details of the queryset.
-        """
-        
-        return queryset.aggregate(quantity_sum=Count("details__quantity")).get("quantity_sum", 0)
-    
-    @classmethod
-    def rest_sum(cls, queryset: QuerySet) -> int:
-        """
-        > It returns the sum of the `rest` field of a queryset
-        
-        :param cls: the class of the model
-        :param queryset: The queryset to be filtered
-        :type queryset: QuerySet
-        :return: A QuerySet object.
-        """
-        
-        rest_sum = queryset.aggregate(rest_sum=Sum("rest")).get("rest_sum")
-        
-        return rest_sum if rest_sum else 0   
 
     
     class Meta:

@@ -5,6 +5,7 @@ from django.db.transaction import atomic
 from transactions.models import ClientTransaction, SupplierTransaction
 
 
+
 @receiver(post_save, sender=ClientTransaction)
 @atomic
 def post_client_transaction_save(sender, instance: ClientTransaction, created, *args, **kwargs):

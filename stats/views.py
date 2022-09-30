@@ -55,8 +55,8 @@ class ReportStatsView(APIView):
         sells_queryset = SellVoucher.between(start_date, end_date)
         sales_queryset = SaleVoucher.between(start_date, end_date)
         
-        sells_sum = SellVoucher.total_sum(queryset=sells_queryset)
-        sales_sum = SaleVoucher.total_sum(queryset=sales_queryset)
+        sells_sum = sells_queryset.total_sum()
+        sales_sum = sales_queryset.total_sum()
         
         sells_profits = SellVoucher.profits(queryset=sells_queryset)
         sales_profits = SaleVoucher.profits(queryset=sales_queryset)
