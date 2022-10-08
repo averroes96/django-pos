@@ -159,6 +159,19 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
+    
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'agents': '128/hour',
+        'buys': '256/hour',
+        'sells': '256/hour',
+        'pos': '512/hour',
+        'products': '256/hour',
+        'stats': '256/hour',
+        'transactions': '128/hour',
+    }
 }
 
 SWAGGER_SETTINGS = {

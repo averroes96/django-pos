@@ -48,7 +48,7 @@ class Article(BaseModel):
     
     def infer_margin(self):
         """
-        > The function `infer_margin` takes the `buy_price` and `sell_price` attributes of the `Product`
+        > The function `infer_margin` takes the `buy_price` and `sell_price` attributes of the `Article`
         class and calculates the margin as a percentage
         """
         import decimal

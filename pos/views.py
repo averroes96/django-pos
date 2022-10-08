@@ -15,6 +15,7 @@ from sells.permissions import SellsPermission
 class SaleVoucherViewSet(ModelViewSet):
     
     permission_classes = [SellsPermission]
+    throttle_scope = "pos"
     
     def get_serializer_class(self):
         if self.action == "create":

@@ -18,6 +18,7 @@ from transactions.models import Expense, ClientTransaction, SupplierTransaction
 class BuyStatsView(APIView):
     
     permission_classes = [StatsPermission]
+    throttle_scope = "stats"
     
     def get(self, request: HttpRequest):
         
@@ -32,6 +33,7 @@ class BuyStatsView(APIView):
 class SellStatsView(APIView):
     
     permission_classes = [StatsPermission]
+    throttle_scope = "stats"
     
     def get(self, request: HttpRequest):
         
@@ -46,6 +48,7 @@ class SellStatsView(APIView):
 class ReportStatsView(APIView):
     
     permission_classes = [StatsPermission]
+    throttle_scope = "stats"
     
     def get(self, request: HttpRequest):
         
