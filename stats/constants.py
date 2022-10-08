@@ -1,0 +1,1 @@
+STATS_PERMISSION_MESSAGE = "you do not have access to stats."
