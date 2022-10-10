@@ -15,6 +15,7 @@ class ClientsViewSet(ModelViewSet):
     
     serializer_class = ClientSerializer
     permission_classes = [SellsPermission]
+    throttle_scope = "sells"
     
     def get_queryset(self):
         return Client.objects.all()
@@ -23,6 +24,7 @@ class ClientsViewSet(ModelViewSet):
 class SellVoucherViewSet(ModelViewSet):
     
     permission_classes = [SellsPermission]
+    throttle_scope = "sells"
     
     def get_serializer_class(self):
         if self.action == "create":

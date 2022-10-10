@@ -37,6 +37,11 @@ class BuyVoucher(Voucher):
             )
     
     def update_details(self, details):
+        """
+        It updates the details of a buy voucher
+        
+        :param details: This is a list of dictionaries. Each dictionary represents a detail of the voucher
+        """
         
         detail_ids = []
         

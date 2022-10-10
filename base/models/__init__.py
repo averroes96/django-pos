@@ -172,9 +172,7 @@ class Transaction(BaseModel):
         queryset.
         """
         
-        queryset = cls.between(start_date, end_date)
-        
-        return queryset.aggregate(value_sum=Sum("value")).get("value_sum", 0)
+        return cls.between(start_date, end_date).aggregate(value_sum=Sum("value")).get("value_sum", 0)
     
     class Meta:
         abstract = True

@@ -22,6 +22,7 @@ class AgentsViewSet(ModelViewSet):
     
     serializer_class = AgentSerializer
     permission_classes = [IsAdminUser]
+    throttle_scope = "agents"
     
     def get_queryset(self):
         return Agent.objects.all()

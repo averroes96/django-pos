@@ -25,6 +25,7 @@ class ClientTransactionViewSet(ModelViewSet):
     
     permission_classes = [IsAdminOrAgent]
     serializer_class = ClientTransactionSerializer
+    throttle_scope = "transactions"
     
     def get_queryset(self):
         return ClientTransaction.objects.all()
@@ -34,6 +35,7 @@ class SupplierTransactionViewSet(ModelViewSet):
     
     permission_classes = [IsAdminOrAgent]
     serializer_class = SupplierTransactionSerializer
+    throttle_scope = "transactions"
     
     def get_queryset(self):
         return SupplierTransaction.objects.all()
@@ -43,6 +45,7 @@ class ExpenseViewSet(ModelViewSet):
     
     permission_classes = [IsAdminOrAgent]
     serializer_class = ExpenseSerializer
+    throttle_scope = "transactions"
     
     def get_queryset(self):
         return Expense.objects.all()
