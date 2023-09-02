@@ -51,6 +51,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('agents', '0001_initial'),
+        ('contenttypes', '0002_remove_content_type_name'),
     ]
 
     operations = [
