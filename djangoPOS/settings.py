@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'pos',
     'stats',
     'transactions',
-    'frontend',
 ]
 
 MIDDLEWARE = [
