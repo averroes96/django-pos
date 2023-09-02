@@ -1,0 +1,54 @@
+<!-- In your Django template -->
+<html>
+<head>
+    <title>My Django Template</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+</head>
+<body>
+    <ul id="api-results">
+        <!-- Results will be inserted here -->
+    </ul>
+    
+    <script>
+        const token = '2e0148d2b5d3a0f4c0708c6fb83daaff8301a5d6';
+        let apiUrl = '/api/agents/';
+    
+        // Function to fetch and append data to the list
+        function fetchAndAppendData(url) {
+            // Set up an axios instance with the Authorization header
+            const axiosInstance = axios.create({
+                headers: {
+                    'Authorization': `Token ${token}`,
+                },
+            });
+    
+            axiosInstance.get(url)
+                .then(function (response) {
+                    // Handle the API response here
+                    const apiData = response.data.results; // Assuming the results are in a 'results' key
+                    const resultList = document.getElementById('api-results');
+    
+                    // Loop through the data and append it to the list
+                    apiData.forEach(function (item) {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = item.username; // Replace with the actual property you want to display
+                        resultList.appendChild(listItem);
+                    });
+    
+                    // Check if there is a next page
+                    if (response.data.next) {
+                        apiUrl = response.data.next; // Set the next page URL
+                        fetchAndAppendData(apiUrl); // Fetch and append data for the next page
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                });
+        }
+    
+        // Start fetching and appending data
+        fetchAndAppendData(apiUrl);
+    </script>    
+    
+</body>
+</html>
