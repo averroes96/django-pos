@@ -16,6 +16,7 @@ class SuppliersViewSet(ModelViewSet):
     
     serializer_class = SupplierSerializer
     permission_classes = [BuysPermission]
+    throttle_scope = "buys"
     
     def get_queryset(self):
         return Supplier.objects.all()
@@ -24,6 +25,7 @@ class SuppliersViewSet(ModelViewSet):
 class BuyVoucherViewSet(ModelViewSet):
     
     permission_classes = [BuysPermission]
+    throttle_scope = "buys"
     
     def get_serializer_class(self):
         if self.action == "create":
